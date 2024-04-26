@@ -17,6 +17,11 @@ function drawingBricks(context, map){
             if (map[i][j] === 1){
                 context.fillRect(45 + j*48, 47 + i*27, 38, 17);
             }
+            if (map[i][j] === 2){
+                context.fillStyle = "gray";
+                context.fillRect(45 + j*48, 47 + i*27, 38, 17);
+                context.fillStyle = "white";
+            }
         }
     }
 }
@@ -37,7 +42,28 @@ function click(event){
     if (x >= 0 && x < 15 && y >= 0 && y < 9){
         bricksMap[y][x] = filling;
     }
-    console.log(bricksMap);
+}
+function changeFilling(event){
+    let lastBut = document.getElementsByClassName("selected-but")[0];
+    lastBut.classList.remove("selected-but");
+    event.target.classList.add("selected-but");
+    filling = parseInt(event.target.id);
+}
+function download(){
+    let rows = new Array();
+    for (let i = 0; i < 9; i++){
+        rows.push(bricksMap[i].join(','));
+    }
+    let textList = rows.join('\n');
+    let blob = new Blob([textList], { type: "text/plain" });
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = "brick-map.txt";
+    document.body.append(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 let canvas = document.getElementsByTagName("canvas")[0];
@@ -59,7 +85,6 @@ for (let i = 0; i < 9; i++){
         bricksMap[i].push(0);
     }
 }
-console.log(bricksMap);
 
 drawBallPlate(ctx);
 
@@ -68,7 +93,14 @@ canvas.onmousemove = function(event){
 }
 canvas.onmousedown = function(event){
     click(event);
+    canvas.addEventListener("mousemove", click);
 }
+canvas.onmouseup = function(){
+    canvas.removeEventListener("mousemove", click);
+    canvas.onmousemove = function(event){
+        selectCell(event, screen);
+    }
+};
 
 let screenUpdate = setInterval(function(){
     clearScreen(ctx);

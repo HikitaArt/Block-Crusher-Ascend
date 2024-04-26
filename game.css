@@ -41,3 +41,6 @@ canvas{
     grid-row-start: 8;
     grid-row-end: 9;
 }
+.selected-but{
+    background-color: rgb(201, 198, 198);
+}
